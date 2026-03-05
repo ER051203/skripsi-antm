@@ -1,0 +1,194 @@
+{% extends "base.html" %} {% block title %}Beranda - Prediksi Saham ANTM{%
+endblock %} {% block content %}
+<section class="hero-section">
+  <div class="container">
+    <div class="row min-vh-100 align-items-center">
+      <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
+        <h1 class="display-4 fw-bold mb-4">
+          <i class="fas fa-chart-line me-3"></i>
+          Prediksi Harga Saham ANTM
+        </h1>
+        <p class="lead mb-5">
+          Analisis Perbandingan Akurasi Algoritma LSTM dan Linear Regression
+        </p>
+
+        <div
+          class="stock-info-card p-4 mb-5"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+              <div class="info-item">
+                <i class="fas fa-building fa-2x mb-3"></i>
+                {% if stock_info %}
+                <h5>{{ stock_info.name }}</h5>
+                <p class="text-white-50">{{ stock_info.ticker }}</p>
+                {% else %}
+                <h5>Data saham belum tersedia</h5>
+                <p class="text-white-50">-</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+              <div class="info-item">
+                <i class="fas fa-tag fa-2x mb-3"></i>
+                {% if stock_info %}
+                <h5>{{ stock_info.ticker }}</h5>
+                {% else %}
+                <h5>-</h5>
+                {% endif %}
+                <p class="text-white-50">Kode Saham</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <i class="fas fa-calendar fa-2x mb-3"></i>
+                <h5>2015 - Sekarang</h5>
+                <p class="text-white-50">Periode Data</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="prediction-form-card p-4"
+          data-aos="fade-up"
+          data-aos-delay="400"
+        >
+          <h4 class="mb-4">
+            <i class="fas fa-cog me-2"></i>
+            Konfigurasi Prediksi
+          </h4>
+
+          <form id="predictionForm" action="/predict" method="POST">
+            <div class="mb-4 text-start">
+              <label class="form-label">
+                <i class="fas fa-search me-2"></i>Kode Saham
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                name="ticker"
+                value="{% if stock_info %}{{ stock_info.ticker }}{% else %}ANTM.JK{% endif %}"
+                readonly
+              />
+              <small class="text-white-50">Default: ANTM.JK</small>
+            </div>
+
+            <div class="mb-4 text-start">
+              <label class="form-label">
+                <i class="fas fa-calendar-alt me-2"></i>Pilih Tanggal Prediksi
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                name="prediction_date"
+                required
+              />
+              <small class="text-white-50"
+                >Prediksi harga hingga tanggal ini</small
+              >
+            </div>
+
+            <input type="hidden" name="start_date" value="2015-01-01" />
+
+            <button
+              type="submit"
+              class="btn btn-predict btn-lg w-100"
+              onclick="
+                this.innerHTML =
+                  '<i class=\'fas fa-spinner fa-spin me-2\'></i>Memproses...'
+              "
+            >
+              <i class="fas fa-rocket me-2"></i>
+              Mulai Prediksi
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="info-section py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="info-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="icon-circle mb-4">
+              <i class="fas fa-chart-bar fa-3x"></i>
+            </div>
+            <h4>Linear Regression</h4>
+            <p>
+              Model statistik sederhana sebagai baseline untuk memprediksi harga
+              saham
+            </p>
+            <ul class="list-unstyled text-start mt-3">
+              <li><i class="fas fa-check-circle me-2"></i>Cepat dan efisien</li>
+              <li>
+                <i class="fas fa-check-circle me-2"></i>Mudah diinterpretasi
+              </li>
+              <li>
+                <i class="fas fa-check-circle me-2"></i>Ideal untuk baseline
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="info-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="icon-circle mb-4">
+              <i class="fas fa-brain fa-3x"></i>
+            </div>
+            <h4>LSTM</h4>
+            <p>
+              Deep Learning yang mampu menangkap pola temporal kompleks dalam
+              data saham
+            </p>
+            <ul class="list-unstyled text-start mt-3">
+              <li>
+                <i class="fas fa-check-circle me-2"></i>Menangani data time
+                series
+              </li>
+              <li>
+                <i class="fas fa-check-circle me-2"></i>Memory jangka panjang
+              </li>
+              <li>
+                <i class="fas fa-check-circle me-2"></i>Akurat untuk data
+                volatil
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="info-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="icon-circle mb-4">
+              <i class="fas fa-balance-scale fa-3x"></i>
+            </div>
+            <h4>Perbandingan</h4>
+            <p>Analisis komparatif menggunakan metrik evaluasi standar</p>
+            <ul class="list-unstyled text-start mt-3">
+              <li>
+                <i class="fas fa-check-circle me-2"></i>MAE (Mean Absolute
+                Error)
+              </li>
+              <li>
+                <i class="fas fa-check-circle me-2"></i>RMSE (Root Mean Square
+                Error)
+              </li>
+              <li><i class="fas fa-check-circle me-2"></i>R² Score</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

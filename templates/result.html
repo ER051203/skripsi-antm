@@ -1,0 +1,191 @@
+{% extends "base.html" %} {% block title %}Hasil Prediksi - Saham ANTM{%
+endblock %} {% block content %}
+<div class="result-page">
+  <div class="result-header py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8 mx-auto text-center" data-aos="fade-down">
+          <h1 class="display-5 fw-bold mb-3">
+            <i class="fas fa-chart-pie me-3"></i>
+            Hasil Prediksi Saham {{ ticker }}
+          </h1>
+          <p class="lead">Periode: {{ start_date }} - {{ end_date }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-5">
+    <div class="row g-4">
+      <div class="col-md-6" data-aos="fade-right">
+        <div class="metric-card lr-card">
+          <div class="card-header">
+            <h3>
+              <i class="fas fa-chart-bar me-2"></i>
+              Linear Regression
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="metric-label">MAE</div>
+                <div class="metric-value">
+                  Rp {{ "{:,.2f}".format(lr_metrics.mae) }}
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="metric-label">RMSE</div>
+                <div class="metric-value">
+                  Rp {{ "{:,.2f}".format(lr_metrics.rmse) }}
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="metric-label">R²</div>
+                <div class="metric-value">
+                  {{ "{:.4f}".format(lr_metrics.r2) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6" data-aos="fade-left">
+        <div class="metric-card lstm-card">
+          <div class="card-header">
+            <h3>
+              <i class="fas fa-brain me-2"></i>
+              LSTM
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="metric-label">MAE</div>
+                <div class="metric-value">
+                  Rp {{ "{:,.2f}".format(lstm_metrics.mae) }}
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="metric-label">RMSE</div>
+                <div class="metric-value">
+                  Rp {{ "{:,.2f}".format(lstm_metrics.rmse) }}
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="metric-label">R²</div>
+                <div class="metric-value">
+                  {{ "{:.4f}".format(lstm_metrics.r2) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12" data-aos="fade-up">
+        <div class="best-model-card">
+          <div class="card-body text-center">
+            <i class="fas fa-trophy fa-3x mb-3"></i>
+            <h3>Model Terbaik: {{ best_model }}</h3>
+            <p class="lead">Dengan RMSE Rp {{ "{:,.2f}".format(best_rmse) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-12" data-aos="fade-up">
+        <div class="graph-card">
+          <div class="card-header">
+            <h4>
+              <i class="fas fa-chart-line me-2"></i>
+              Grafik Perbandingan Prediksi
+            </h4>
+          </div>
+          <div class="card-body">
+            <div id="price-chart" style="height: 500px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if future_predictions %}
+    <div class="row mt-5">
+      <div class="col-12" data-aos="fade-up">
+        <div class="future-card">
+          <div class="card-header">
+            <h4>
+              <i class="fas fa-clock me-2"></i>
+              Prediksi Harga Masa Depan
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Linear Regression</th>
+                    <th>LSTM</th>
+                    <th>Rekomendasi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in range(future_predictions.dates|length) %}
+                  <tr>
+                    <td>{{ future_predictions.dates[i] }}</td>
+                    <td>Rp {{ "{:,.2f}".format(future_predictions.lr[i]) }}</td>
+                    <td>
+                      Rp {{ "{:,.2f}".format(future_predictions.lstm[i]) }}
+                    </td>
+                    <td>
+                      {% if future_predictions.lr[i] >
+                      future_predictions.lstm[i] %}
+                      <span class="badge bg-success">LR Lebih Tinggi</span>
+                      {% else %}
+                      <span class="badge bg-info">LSTM Lebih Tinggi</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row mt-5">
+      <div class="col-12 text-center">
+        <a href="/" class="btn btn-back btn-lg me-3">
+          <i class="fas fa-arrow-left me-2"></i>
+          Kembali
+        </a>
+        <button class="btn btn-download btn-lg" onclick="window.print()">
+          <i class="fas fa-download me-2"></i>
+          Download Hasil
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Plot grafik dengan Plotly (Abaikan garis merah dari VS Code di baris bawah ini)
+  var graphJSON = {{ graphJSON | safe }};
+  Plotly.newPlot('price-chart', graphJSON.data, graphJSON.layout, {
+      responsive: true,
+      displaylogo: false
+  });
+
+  // Responsive chart
+  window.addEventListener('resize', function() {
+      Plotly.Plots.resize('price-chart');
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block title %}Error - Prediksi Saham ANTM{%
+endblock %} {% block content %}
+<section class="hero-section py-5 min-vh-100 d-flex align-items-center">
+  <div class="container text-center" data-aos="fade-up">
+    <h1 class="display-1 text-danger mb-4">
+      <i class="fas fa-exclamation-triangle"></i>
+    </h1>
+    <h2 class="text-white fw-bold mb-3">Oops! Terjadi Kesalahan</h2>
+    <p class="lead text-white-50 mb-4">
+      Mohon maaf, sistem tidak dapat memproses permintaan prediksi saat ini.
+    </p>
+
+    <div
+      class="prediction-form-card p-4 mx-auto text-start"
+      style="max-width: 600px"
+    >
+      <h5 class="text-warning mb-3">
+        <i class="fas fa-bug me-2"></i>Detail Error (Untuk Debugging):
+      </h5>
+      <code
+        class="text-white d-block p-3 rounded"
+        style="background-color: rgba(0, 0, 0, 0.5)"
+      >
+        {{ error }}
+      </code>
+    </div>
+
+    <div class="mt-5">
+      <a href="/" class="btn btn-outline-light btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>Kembali ke Beranda
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
